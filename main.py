@@ -1,11 +1,17 @@
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
 from dash import Dash, html, dcc, Output, Input
+import dash_table
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
 import yfinance as yf
 from crypto_list import crypto_list
+from functions import sarimax_pred
+
+
+def prophet_prediction(df):
+    pass
 
 css_sheet = [dbc.themes.UNITED]
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
@@ -44,11 +50,17 @@ app.layout = html.Div([
         dcc.Graph(id='my-graph-line')
     ),
 
+    html.Label("SARIMAX Prediction Results"),
+    #dash_table.DataTable(id='sarimax-results',columns =  [{"name": i, "id": i,} for i in (df.columns)],)
+    html.Div(id='sarimax-results')
+
+
 
 ], style={'background-color': 'Lightgreen'})
 
 @app.callback([Output('my-graph-candlestick', 'figure'),
-               Output('my-graph-line', 'figure')],
+               Output('my-graph-line', 'figure'),
+               Output('sarimax-results', 'children')],
               [Input('crypto-pair', 'value'),
                Input('time-frame', 'value')])
 def update_graph(crypto, time_frame):
@@ -72,7 +84,7 @@ def update_graph(crypto, time_frame):
         start = (dt.now() - relativedelta(weeks=1))
     elif time_frame in ['1d']:
         interval = '15m'
-        start = (dt.now() - relativedelta(days=1))
+        start = (dt.now() - relativedelta(seconds=15))
     else:
         interval = '1m'
         start = dt.now() - relativedelta(days=1)
@@ -93,8 +105,10 @@ def update_graph(crypto, time_frame):
 
     fig2 = px.line(data_frame=df, x=df.index, y=df['Volume'], markers='o')
     fig2.update_layout(title=f'History of Volume {crypto}', xaxis_title='Time', yaxis_title=f'Volume of {crypto}')
-    return fig1, fig2
 
+    results = sarimax_pred(df)
+
+    return fig1, fig2, results
 
 
 
