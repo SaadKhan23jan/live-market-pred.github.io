@@ -1,5 +1,4 @@
-# created by virtualenv automatically
 venv
-*.py
-.env
+*.pyc
 .DS_Store
+.env
