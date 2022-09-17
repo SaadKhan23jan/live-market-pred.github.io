@@ -5,8 +5,8 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
 import yfinance as yf
-from pages.crypto_list import crypto_list
-from pages.functions import sarimax_pred
+from crypto_list import crypto_list
+from functions import sarimax_pred
 
 
 def prophet_prediction(df):

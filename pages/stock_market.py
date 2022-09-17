@@ -1,12 +1,12 @@
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
-from dash import Dash, html, dcc, Output, Input
+from dash import html, dcc, Output, Input
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
 import yfinance as yf
-from pages.crypto_list import crypto_list
-from pages.functions import sarimax_pred
+from crypto_list import crypto_list
+from functions import sarimax_pred
 
 
 def prophet_prediction(df):
@@ -14,9 +14,9 @@ def prophet_prediction(df):
 
 css_sheet = [dbc.themes.SPACELAB]
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-app = Dash(__name__, external_stylesheets=css_sheet)
+dash.register_page(__name__)
 
-app.layout = html.Div([
+layout = html.Div([
     dbc.Button('Contact Me: LinkedIn', href='https://www.linkedin.com/in/saad-khan-167704163/', target='_blank',
                style={'position':'center'}),
     html.Div(
@@ -97,7 +97,7 @@ app.layout = html.Div([
 
 ], style={'background-color': 'Lightgreen'})
 
-@app.callback([Output('my-graph-candlestick', 'figure'),
+@callback([Output('my-graph-candlestick', 'figure'),
                Output('my-graph-line', 'figure'),
                Output('sarimax-results', 'children'),
                Output('fig-pred', 'figure')],
@@ -156,8 +156,3 @@ def update_graph(crypto, time_frame, p, i, q, sarimax_model):
     fig_pred.update_layout(title='Predictions')
 
     return fig1, fig2, results, fig_pred
-
-
-
-if __name__ == '__main__':
-    app.run_server(debug=True)

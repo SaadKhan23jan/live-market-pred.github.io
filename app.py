@@ -1,12 +1,12 @@
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
-from dash import Dash, html, dcc, Output, Input
+from dash import Dash, html, dcc, Output, Input, State
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
 import yfinance as yf
-from pages.crypto_list import crypto_list
-from pages.functions import sarimax_pred
+from crypto_list import crypto_list
+from functions import sarimax_pred
 
 
 def prophet_prediction(df):
@@ -19,7 +19,7 @@ app = Dash(__name__, external_stylesheets=css_sheet)
 app.layout = html.Div([
     dbc.Button('Contact Me: LinkedIn', href='https://www.linkedin.com/in/saad-khan-167704163/', target='_blank',
                style={'position':'center'}),
-    dbc.Button('Click Here for Stock Markets'),
+    dbc.Button('Click Here for Stock Markets', href='http://127.0.0.1:8050/stock_markets.py', target='_blank', disabled=True),
     html.Div(
         html.H1("Welcome to Live Crypto data", style={'textAlign':'center', 'backgroundColor':'Lightgreen'})
     ),
@@ -68,23 +68,26 @@ app.layout = html.Div([
 
         html.Div([
             html.Label('Enter the order of P:   '),
-            dcc.Input(id='p-order', type='number', placeholder='Enter the order of P', value=0, inputMode='numeric'),
+            dcc.Input(id='p-order', type='number', placeholder='Enter the order of P', value=0, inputMode='numeric', min=0),
         ], style={'display':'inline'}
         ),
         html.Div([
             html.Label('Enter the order of I:   '),
-            dcc.Input(id='i-order', type='number', placeholder='Enter the order of I', value=0, inputMode='numeric'),
+            dcc.Input(id='i-order', type='number', placeholder='Enter the order of I', value=0, inputMode='numeric', min=0),
         ], style={'display':'inline'}
         ),
         html.Div([
             html.Label('Enter the order of Q:   '),
-            dcc.Input(id='q-order', type='number', placeholder='Enter the order of Q', value=0, inputMode='numeric'),
+            dcc.Input(id='q-order', type='number', placeholder='Enter the order of Q', value=0, inputMode='numeric', min=0),
+            html.Button(id='run-pred', n_clicks=0, children='Submit'),
         ], style={'display':'inline'}
         ),
         #dash_table.DataTable(id='sarimax-results',columns =  [{"name": i, "id": i,} for i in (df.columns)],),
         html.Div(id='sarimax-results'),
 
     ]),
+
+
 
     html.Br(),
     html.Br(),
@@ -102,13 +105,14 @@ app.layout = html.Div([
                Output('my-graph-line', 'figure'),
                Output('sarimax-results', 'children'),
                Output('fig-pred', 'figure')],
-              [Input('crypto-pair', 'value'),
-               Input('time-frame', 'value'),
-               Input('p-order', 'value'),
-               Input('i-order', 'value'),
-               Input('q-order', 'value'),
-               Input('sarimax-model', 'value')])
-def update_graph(crypto, time_frame, p, i, q, sarimax_model):
+              [Input('run-pred', 'n_clicks'),
+               State('crypto-pair', 'value'),
+               State('time-frame', 'value'),
+               State('p-order', 'value'),
+               State('i-order', 'value'),
+               State('q-order', 'value'),
+               State('sarimax-model', 'value')])
+def update_graph(n_clicks, crypto, time_frame, p, i, q, sarimax_model):
     if time_frame in ['10y']:
         interval = '1mo'
         start = (dt.now()-relativedelta(years=10))

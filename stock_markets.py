@@ -5,7 +5,7 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
 import yfinance as yf
-from crypto_list import crypto_list
+from stock_market_list import stock_market_list
 from functions import sarimax_pred
 
 
@@ -19,14 +19,13 @@ dash.register_page(__name__)
 layout = html.Div([
     dbc.Button('Contact Me: LinkedIn', href='https://www.linkedin.com/in/saad-khan-167704163/', target='_blank',
                style={'position':'center'}),
-    dbc.Button('Click Here for Stock Markets'),
     html.Div(
         html.H1("Welcome to Live Crypto data", style={'textAlign':'center', 'backgroundColor':'Lightgreen'})
     ),
 
     html.Div([
         html.Label('Select Crypto-Pair'),
-        dcc.Dropdown(id='crypto-pair', options=crypto_list,
+        dcc.Dropdown(id='crypto-pair', options=stock_market_list,
                      style={'width':'50%'}, value='BTC-USD'),
     ]),
 
