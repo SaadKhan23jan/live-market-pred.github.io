@@ -5,25 +5,22 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
 import yfinance as yf
+from crypto_list import crypto_list
 
-css_sheet = [dbc.themes.SPACELAB]
+css_sheet = [dbc.themes.UNITED]
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
 app = Dash(__name__, external_stylesheets=css_sheet)
 
 app.layout = html.Div([
-    dbc.Button('Contact Me', href='https://www.linkedin.com/in/saad-khan-167704163/'),
+    dbc.Button('Contact Me: LinkedIn', href='https://www.linkedin.com/in/saad-khan-167704163/', target='_blank',
+               style={'margin':'Right'}),
     html.Div(
         html.H1("Welcome to Live Crypto data", style={'textAlign':'center', 'backgroundColor':'Lightgreen'})
     ),
 
     html.Div([
         html.Label('Select Crypto-Pair'),
-        dcc.Dropdown(id='crypto-pair', options=[{'label': 'BTC-USD', 'value':'BTC-USD'},
-                                                {'label': 'ETH-USD', 'value':'ETH-USD'},
-                                                {'label': 'ADA-USD', 'value':'ADA-USD'},
-                                                {'label': 'DENT-USD', 'value':'DENT-USD'},
-                                                {'label': 'ALGO-USD', 'value':'ALGO-USD'},
-                                                {'label': 'CAKE-USD', 'value':'CAKE-USD'},],
+        dcc.Dropdown(id='crypto-pair', options=crypto_list,
                      style={'width':'50%'}, value='BTC-USD'),
     ]),
 
@@ -48,7 +45,7 @@ app.layout = html.Div([
     ),
 
 
-], style={'backgroundColor': 'Lightgreen'})
+], style={'background-color': 'Lightgreen'})
 
 @app.callback([Output('my-graph-candlestick', 'figure'),
                Output('my-graph-line', 'figure')],
@@ -97,16 +94,6 @@ def update_graph(crypto, time_frame):
     fig2 = px.line(data_frame=df, x=df.index, y=df['Volume'], markers='o')
     fig2.update_layout(title=f'History of Volume {crypto}', xaxis_title='Time', yaxis_title=f'Volume of {crypto}')
     return fig1, fig2
-
-
-
-
-
-
-
-
-
-
 
 
 
