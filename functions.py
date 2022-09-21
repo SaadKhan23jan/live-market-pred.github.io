@@ -2,8 +2,7 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX, SARIMAXResults
 import pandas as pd
 import dash_table
 import plotly.express as px
-from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-import matplotlib.pyplot as plt
+
 
 def sarimax_pred(df, p, i, q, sarimax_model, days):
     if sarimax_model=='MA':
