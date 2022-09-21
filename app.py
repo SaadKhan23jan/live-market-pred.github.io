@@ -9,7 +9,6 @@ import yfinance as yf
 from crypto_list import crypto_list
 from functions import sarimax_pred
 
-
 css_sheet = [dbc.themes.SKETCHY]
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
 app = Dash(__name__, external_stylesheets=css_sheet)
@@ -17,28 +16,31 @@ server = app.server
 
 app.layout = html.Div([
     dbc.Button('Contact Me: LinkedIn', href='https://www.linkedin.com/in/saad-khan-167704163/', target='_blank',
-               style={'position':'center'}),
-    dbc.Button('Click Here for Stock Markets', href='http://127.0.0.1:8050/stock_markets.py', target='_blank', disabled=True),
+               style={'position': 'center'}),
+
+    dbc.Button('Click Here for Stock Markets', href='http://127.0.0.1:8050/stock_markets.py', target='_blank',
+               disabled=True),
     html.Div(
-        html.H1("Welcome to Live Crypto/Stock Market Data and Predictions", style={'textAlign':'center', 'backgroundColor':'Lightgreen'})
+        html.H1("Welcome to Live Crypto/Stock Market Data and Predictions", style={'textAlign': 'center',
+                                                                                   'backgroundColor': 'Lightgreen'})
     ),
 
     html.Div([
         html.Label('Select Crypto-Pair/Stock Market'),
         dcc.Dropdown(id='crypto-pair', options=crypto_list,
-                     style={'width':'50%'}, value='BTC-USD'),
+                     style={'width': '50%'}, value='BTC-USD'),
     ]),
 
     html.Div([
         html.Label('Select Time Frame'),
-        dcc.Dropdown(id='time-frame', options=[{'label':'10 Year', 'value':'10y'},
-                                               {'label':'1 Year', 'value':'1y'},
-                                               {'label':'6 Months', 'value':'6mo'},
-                                               {'label':'3 Months', 'value':'3mo'},
-                                               {'label':'1 Months', 'value':'1mo'},
-                                               {'label':'1 Week', 'value':'1wk'},
-                                               {'label':'1 Day', 'value':'24h'}],
-                     style={'width':'50%'}, value='1y'),
+        dcc.Dropdown(id='time-frame', options=[{'label': '10 Year', 'value': '10y'},
+                                               {'label': '1 Year', 'value': '1y'},
+                                               {'label': '6 Months', 'value': '6mo'},
+                                               {'label': '3 Months', 'value': '3mo'},
+                                               {'label': '1 Months', 'value': '1mo'},
+                                               {'label': '1 Week', 'value': '1wk'},
+                                               {'label': '1 Day', 'value': '24h'}],
+                     style={'width': '50%'}, value='1y'),
     ]),
 
     html.Div(
@@ -58,16 +60,56 @@ app.layout = html.Div([
         html.Br(),
 
         html.Label('Select one of SARIMAX Model:   '),
-        dcc.Dropdown(id='sarimax-model', options=[{'label':'MA', 'value':'MA'},
-                                                  {'label':'AR', 'value':'AR'},
-                                                  {'label':'ARMA','value':'ARMA'},
-                                                  {'label':'ARIMA', 'value':'ARIMA'},
-                                                  {'label':'SARIMAX', 'value':'SARIMAX'},
+        dcc.Dropdown(id='sarimax-model', options=[{'label': 'MA', 'value': 'MA'},
+                                                  {'label': 'AR', 'value': 'AR'},
+                                                  {'label': 'ARMA', 'value': 'ARMA'},
+                                                  {'label': 'ARIMA', 'value': 'ARIMA'},
+                                                  {'label': 'SARIMAX', 'value': 'SARIMAX'},
                                                   {'label': 'Auto ARIMA', 'value': 'Auto ARIMA'}
                                                   ],
-                     style={'width':'50%', 'backgroundColor':'Lightscreen'},
+                     style={'width': '50%'},
                      value='ARIMA'
                      ),
+        html.Br(),
+
+        html.Div(
+            id='sarimax-container',
+            children=html.Div([
+                html.Div([
+                    html.Label('Enter the order of P:', style={'paddingRight': '20px'}),
+                    dcc.Input(id='sarimax-p-order', type='number', value=0, inputMode='numeric', min=0,)
+                ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
+                          'paddingRight': '10px', 'paddingTop': '15px'},
+                ),
+
+                html.Div([
+                    html.Label('Enter the order of I:', style={'paddingRight': '20px'}),
+                    dcc.Input(id='sarimax-i-order', type='number', value=0, inputMode='numeric', min=0)
+                ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
+                          'paddingRight': '10px', 'paddingTop': '15px'},
+                ),
+
+                html.Div([
+                    html.Label('Enter the order of Q:', style={'paddingRight': '20px'}),
+                    dcc.Input(id='sarimax-q-order', type='number', value=0, inputMode='numeric', min=0,)
+                ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
+                          'paddingRight': '10px', 'paddingTop': '15px'},
+                ),
+
+                html.Div([
+                    html.Label('Select the Seasonal Factor'),
+                    dcc.Dropdown(id='seasonal-factor', options=[{'label': 'Quarterly', 'value': 3},
+                                                                {'label': '4-Monthly', 'value': 4},
+                                                                {'label': 'Bi-Yearly', 'value': 6},
+                                                                {'label': 'Yearly', 'value': 12}, ],
+                                 value=12),
+                ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
+                          'paddingRight': '10px', 'paddingTop': '15px'}),
+
+                      ], style={'display': 'flex'}),
+            hidden=True,
+        ),
+
 
         html.Br(),
         html.Br(),
@@ -75,43 +117,47 @@ app.layout = html.Div([
         html.Div([
             html.Div([
                 html.Label('Enter the order of p:', style={'paddingRight': '20px'}),
-                dcc.Input(id='p-order', type='number', placeholder='Enter the order of P', value=0, inputMode='numeric', min=0),
+                dcc.Input(id='p-order', type='number', placeholder='Enter the order of P', value=0,
+                          inputMode='numeric', min=0),
             ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
-                      'paddingRight': '10px', 'paddingTop': '15px'}
+                      'paddingRight': '10px', 'paddingTop': '15px'}, hidden=True
             ),
 
             html.Div([
                 html.Label('Enter the order of i:', style={'paddingRight': '20px'}),
-                dcc.Input(id='i-order', type='number', placeholder='Enter the order of I', value=0, inputMode='numeric', min=0),
+                dcc.Input(id='i-order', type='number', placeholder='Enter the order of I', value=0,
+                          inputMode='numeric', min=0),
             ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
-                      'paddingRight': '10px', 'paddingTop': '15px'}
-        ),
-        html.Div([
-            html.Label('Enter the order of q:', style={'paddingRight': '20px'}),
-            dcc.Input(id='q-order', type='number', placeholder='Enter the order of Q', value=0, inputMode='numeric', min=0),
-        ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
-                  'paddingRight': '10px', 'paddingTop': '15px'}
-        ),
-        html.Div([
-            html.Label('Days for Forecast:', style={'paddingRight': '20px'}),
-            dcc.Input(id='days', type='number', placeholder='Enter the order of Q', value=0, inputMode='numeric', min=0,),
-        ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
-                  'paddingRight': '10px', 'paddingTop': '15px'}
-        ),
+                      'paddingRight': '10px', 'paddingTop': '15px'}, hidden=False
+            ),
+
+            html.Div([
+                html.Label('Enter the order of q:', style={'paddingRight': '20px'}),
+                dcc.Input(id='q-order', type='number', placeholder='Enter the order of Q', value=0,
+                          inputMode='numeric', min=0),
+            ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
+                      'paddingRight': '10px', 'paddingTop': '15px'}, hidden=False
+            ),
+            html.Div([
+                html.Label('Days for Forecast:', style={'paddingRight': '20px'}),
+                dcc.Input(id='days', type='number', placeholder='Enter the order of Q', value=14,
+                          inputMode='numeric', min=0,),
+            ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
+                      'paddingRight': '10px', 'paddingTop': '15px'}, hidden=False
+            ),
 
         ], style={'display': 'flex'}),
 
         html.Br(),
         html.Button(id='run-pred', n_clicks=0, children='Run Forecast',
-                    style={'weight':'bold'}),
+                    style={'weight': 'bold'}),
         html.Br(),
         html.Br(),
 
-        #dash_table.DataTable(id='sarimax-results',columns =  [{"name": i, "id": i,} for i in (df.columns)],),
+        # dash_table.DataTable(id='sarimax-results',columns =  [{"name": i, "id": i,} for i in (df.columns)],),
         html.Div(id='sarimax-results'),
 
     ]),
-
 
 
     html.Br(),
@@ -134,9 +180,19 @@ app.layout = html.Div([
 ], style={'background-color': 'Lightgreen'})
 
 
+@app.callback(Output('sarimax-container', 'hidden'),
+              Input('sarimax-model', 'value'),
+              prevent_initial_call=True)
+def update_output(sarimax_model):
+    if sarimax_model == 'SARIMAX':
+        return False
+    else:
+        return True
+
+
 @app.callback([Output('graph-candlestick', 'figure'),
                Output('graph-line', 'figure'),
-               Output('volume-graph-line', 'figure'),],
+               Output('volume-graph-line', 'figure'), ],
               [Input('crypto-pair', 'value'),
                Input('time-frame', 'value'),
                ])
@@ -169,10 +225,8 @@ def update_graph(crypto, time_frame):
 
     end = dt.now()
 
-
-
-    #df = yf.download(tickers=crypto, period=time_frame, interval=interval)
-    df = yf.download(tickers=crypto, start=start, end=end)
+    # df = yf.download(tickers=crypto, period=time_frame, interval=interval)
+    df = yf.download(tickers=crypto, start=start, end=end, interval=interval)
 
     fig1 = go.Figure(data=[go.Candlestick(x=df.index,
                                           open=df.Open,
@@ -201,11 +255,16 @@ def update_graph(crypto, time_frame):
                State('q-order', 'value'),
                State('sarimax-model', 'value'),
                State('days', 'value'),
-               ])
-def predictions(n_clicks, time_frame, crypto, p, i, q, sarimax_model, days):
+               State('sarimax-p-order', 'value'),
+               State('sarimax-i-order', 'value'),
+               State('sarimax-q-order', 'value'),
+               State('seasonal-factor', 'value'),
 
-    if time_frame in ['10y']:
-        interval = '1mo'
+               ])
+def predictions(n_clicks, time_frame, crypto, p, i, q, sarimax_model, days, sp, si, sq, seasonal_factor):
+
+    if time_frame == '10y':
+        interval = '90m'
         start = (dt.now()-relativedelta(years=10))
     elif time_frame in ['1y']:
         interval = '1wk'
@@ -231,17 +290,13 @@ def predictions(n_clicks, time_frame, crypto, p, i, q, sarimax_model, days):
 
     end = dt.now()
 
-
     # df = yf.download(tickers=crypto, period=time_frame, interval=interval)
-    df = yf.download(tickers=crypto, start=start, end=end)
+    df = yf.download(tickers=crypto, start=start, end=end, auto_adjust=True)
 
     # Here we will call our function for SARIMAX Model
-    results, pred_fig = sarimax_pred(df, crypto, p, i, q, sarimax_model, days)
-
-
+    results, pred_fig = sarimax_pred(df, crypto, p, i, q, sarimax_model, days, sp, si, sq, seasonal_factor)
 
     return results, pred_fig, sarimax_model
-
 
 
 if __name__ == '__main__':

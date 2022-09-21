@@ -1,3 +1,5 @@
+from yahooquery import Screener
+
 crypto_list = [{'label': 'BTC-USD', 'value':'BTC-USD'},
                {'label': 'ETH-USD', 'value':'ETH-USD'},
                {'label': 'USDT-USD', 'value':'USDT-USD'},
@@ -86,3 +88,13 @@ crypto_list = [{'label': 'BTC-USD', 'value':'BTC-USD'},
                 {'label': 'Alphabet Inc.', 'value': 'GOOG'},
 
                ]
+
+
+s = Screener()
+data = s.get_screeners('all_cryptocurrencies_us', count=250)
+dicts = data['all_cryptocurrencies_us']['quotes']
+symbols = [d['symbol'] for d in dicts]
+
+cl = []
+for i in symbols:
+    cl.append({'label': i, 'value': i})
