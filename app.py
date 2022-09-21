@@ -90,10 +90,20 @@ app.layout = html.Div([
         ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
                   'paddingRight': '10px', 'paddingTop': '15px'}
         ),
+        html.Div([
+            html.Label('Days for Forecast:', style={'paddingRight': '20px'}),
+            dcc.Input(id='days', type='number', placeholder='Enter the order of Q', value=0, inputMode='numeric', min=0,),
+        ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
+                  'paddingRight': '10px', 'paddingTop': '15px'}
+        ),
+
         ], style={'display': 'flex'}),
 
         html.Br(),
-        html.Button(id='run-pred', n_clicks=0, children='Predict'),
+        html.Button(id='run-pred', n_clicks=0, children='Run Forecast',
+                    style={'weight':'bold'}),
+        html.Br(),
+        html.Br(),
 
         #dash_table.DataTable(id='sarimax-results',columns =  [{"name": i, "id": i,} for i in (df.columns)],),
         html.Div(id='sarimax-results'),
@@ -188,8 +198,9 @@ def update_graph(crypto, time_frame):
                State('i-order', 'value'),
                State('q-order', 'value'),
                State('sarimax-model', 'value'),
+               State('days', 'value'),
                ])
-def predictions(n_clicks, time_frame, crypto, p, i, q, sarimax_model):
+def predictions(n_clicks, time_frame, crypto, p, i, q, sarimax_model, days):
 
     if time_frame in ['10y']:
         interval = '1mo'
@@ -223,7 +234,7 @@ def predictions(n_clicks, time_frame, crypto, p, i, q, sarimax_model):
     df = yf.download(tickers=crypto, start=start, end=end)
 
     # Here we will call our function for SARIMAX Model
-    results, fig_pred = sarimax_pred(df, p, i, q, sarimax_model)
+    results, fig_pred = sarimax_pred(df, p, i, q, sarimax_model, days)
 
     fig_pred.update_layout(title='Predictions')
 

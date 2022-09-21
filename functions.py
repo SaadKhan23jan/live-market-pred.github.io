@@ -5,7 +5,7 @@ import plotly.express as px
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 import matplotlib.pyplot as plt
 
-def sarimax_pred(df, p, i, q, sarimax_model):
+def sarimax_pred(df, p, i, q, sarimax_model, days):
     if sarimax_model=='MA':
         order=(p, 0, 0)
     elif sarimax_model == 'AR':
@@ -22,7 +22,7 @@ def sarimax_pred(df, p, i, q, sarimax_model):
 
 
     results = model.fit()
-    preds = SARIMAXResults.predict(results, start=len(df), end=len(df) + 1000)
+    preds = SARIMAXResults.predict(results, start=len(df), end=len(df) + days)
     actual = df['Close'].values
     results_summary = results.summary()
 
