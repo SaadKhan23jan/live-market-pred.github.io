@@ -121,7 +121,7 @@ app.layout = html.Div([
         html.H1([f'Predictions Through ', html.Label(id='model_used', style={'color': 'blue', 'weight': 'bold'}),
                  ' Models']),
 
-    ], style={'borderRadius': '20px', 'width': '750px',
+    ], style={'borderRadius': '20px', 'width': '800px',
               'backgroundColor': '#e6f5f4', 'padding': '30px'}),
 
     dcc.Graph(id='fig-pred'),
