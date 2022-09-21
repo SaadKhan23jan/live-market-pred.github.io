@@ -104,7 +104,7 @@ app.layout = html.Div([
                                                                 {'label': 'Yearly', 'value': 12}, ],
                                  value=12),
                 ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
-                          'paddingRight': '10px', 'paddingTop': '15px'}),
+                          'paddingRight': '10px', 'paddingTop': '15px'}, hidden=False),
 
                       ], style={'display': 'flex'}),
             hidden=True,
@@ -115,28 +115,34 @@ app.layout = html.Div([
         html.Br(),
 
         html.Div([
-            html.Div([
-                html.Label('Enter the order of p:', style={'paddingRight': '20px'}),
-                dcc.Input(id='p-order', type='number', placeholder='Enter the order of P', value=0,
-                          inputMode='numeric', min=0),
-            ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
-                      'paddingRight': '10px', 'paddingTop': '15px'}, hidden=True
+            html.Div(
+                id='p-order-container',
+                children=[
+                    html.Label('Enter the order of p:', style={'paddingRight': '20px'}),
+                    dcc.Input(id='p-order', type='number', placeholder='Enter the order of P', value=0,
+                              inputMode='numeric', min=0, required=True),
+                ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
+                          'paddingRight': '10px', 'paddingTop': '15px'}, hidden=False,
             ),
 
-            html.Div([
-                html.Label('Enter the order of i:', style={'paddingRight': '20px'}),
-                dcc.Input(id='i-order', type='number', placeholder='Enter the order of I', value=0,
-                          inputMode='numeric', min=0),
-            ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
-                      'paddingRight': '10px', 'paddingTop': '15px'}, hidden=False
+            html.Div(
+                id='i-order-container',
+                children=[
+                    html.Label('Enter the order of i:', style={'paddingRight': '20px'}),
+                    dcc.Input(id='i-order', type='number', placeholder='Enter the order of I', value=0,
+                              inputMode='numeric', min=0),
+                ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
+                          'paddingRight': '10px', 'paddingTop': '15px'}, hidden=False,
             ),
 
-            html.Div([
-                html.Label('Enter the order of q:', style={'paddingRight': '20px'}),
-                dcc.Input(id='q-order', type='number', placeholder='Enter the order of Q', value=0,
-                          inputMode='numeric', min=0),
-            ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
-                      'paddingRight': '10px', 'paddingTop': '15px'}, hidden=False
+            html.Div(
+                id='q-order-container',
+                children=[
+                    html.Label('Enter the order of q:', style={'paddingRight': '20px'}),
+                    dcc.Input(id='q-order', type='number', placeholder='Enter the order of Q', value=0,
+                              inputMode='numeric', min=0),
+                ], style={'backgroundColor': '#f3f2f5', 'borderRadius': '10px', 'marginLeft': '10px',
+                          'paddingRight': '10px', 'paddingTop': '15px'}, hidden=False,
             ),
             html.Div([
                 html.Label('Days for Forecast:', style={'paddingRight': '20px'}),
@@ -180,14 +186,25 @@ app.layout = html.Div([
 ], style={'background-color': 'Lightgreen'})
 
 
-@app.callback(Output('sarimax-container', 'hidden'),
+@app.callback([Output('sarimax-container', 'hidden'),
+               Output('p-order-container', 'hidden'),
+               Output('i-order-container', 'hidden'),
+               Output('q-order-container', 'hidden'), ],
               Input('sarimax-model', 'value'),
               prevent_initial_call=True)
 def update_output(sarimax_model):
     if sarimax_model == 'SARIMAX':
-        return False
+        return False, False, False, False
+    elif sarimax_model == 'MA':
+        return True, True, True, False
+    elif sarimax_model == 'AR':
+        return True, False, True, True
+    elif sarimax_model == 'ARMA':
+        return True, False, True, False
+    elif sarimax_model == 'ARIMA':
+        return False, True, True, True
     else:
-        return True
+        return None
 
 
 @app.callback([Output('graph-candlestick', 'figure'),
