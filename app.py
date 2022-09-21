@@ -63,6 +63,7 @@ app.layout = html.Div([
                                                   {'label':'ARMA','value':'ARMA'},
                                                   {'label':'ARIMA', 'value':'ARIMA'},
                                                   {'label':'SARIMAX', 'value':'SARIMAX'},
+                                                  {'label': 'Auto ARIMA', 'value': 'Auto ARIMA'}
                                                   ],
                      style={'width':'50%', 'backgroundColor':'Lightscreen'},
                      value='ARIMA'
@@ -235,11 +236,11 @@ def predictions(n_clicks, time_frame, crypto, p, i, q, sarimax_model, days):
     df = yf.download(tickers=crypto, start=start, end=end)
 
     # Here we will call our function for SARIMAX Model
-    results, fig_pred = sarimax_pred(df, p, i, q, sarimax_model, days)
+    results, pred_fig = sarimax_pred(df, crypto, p, i, q, sarimax_model, days)
 
-    fig_pred.update_layout(title='Predictions')
 
-    return results, fig_pred, sarimax_model
+
+    return results, pred_fig, sarimax_model
 
 
 
