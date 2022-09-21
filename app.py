@@ -13,6 +13,7 @@ from functions import sarimax_pred
 css_sheet = [dbc.themes.SKETCHY]
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
 app = Dash(__name__, external_stylesheets=css_sheet)
+server = app.server
 
 app.layout = html.Div([
     dbc.Button('Contact Me: LinkedIn', href='https://www.linkedin.com/in/saad-khan-167704163/', target='_blank',
